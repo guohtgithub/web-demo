@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./css/apis.css">
+    <title>AUXB API Doc</title>
+</head>
+<body>
+    <div class="file-view markdown">
+        <div class="anchor-wrap">
+            <h1>Aux 币币交易api使用说明</h1>
+        </div>
+        <p>要使用币币交易api</p>
+        <p>请先完成实名认证，然后使用pc浏览器登陆 
+            <a href="http://aux.hk" rel="nofollow">http://aux.hk</a>，
+            获取<code>api key</code>和 <code>api secret</code>
+        </p>
+        <div class="anchor-wrap"><h1>Api 地址</h1></div>
+        <p style="color: #00a7f4;">https://www.auxb.io/</p>
+        <div class="anchor-wrap"><h1>api签名</h1></div>
+        <p>每个订单接口都需要签名</p>
+        <div class="anchor-wrap"><h4>签名方法</h4></div>
+        <p>签名 = md5(<code>uri</code>+<code>request body</code> + <code>api secret</code>)</p>
+        <p>请求时设置如下两个http header</p>
+        <pre>
+            <code class="hljs ldif">
+                <span class="hljs-attribute">X-Api-Token</span>: api key
+                <span class="hljs-attribute">X-Api-Sign</span>: 签名
+            </code>
+        </pre>
+        <p>例如 请求 下单接口 <code>/v1/trade/coin/order</code></p>
+        <p>参数转成json串之后如下</p>
+        <pre>
+            <code class="hljs json">
+                {<span class="hljs-attr">"consignType"</span>: <span class="hljs-string">"limit_sell"</span>, <span class="hljs-attr">"price"</span>: <span class="hljs-number">59841</span>, <span class="hljs-attr">"qty"</span>: <span class="hljs-number">0.03</span>, <span class="hljs-attr">"symbol"</span>: <span class="hljs-string">"BTC_AUC"</span>}
+            </code>
+        </pre>
+        <p>api key 为 <code>abcd5678</code></p>
+        <p>api secret 为 <code>abcd1234</code></p>
+        <p>把接口地址，参数json 串，api secret 拼接起来</p>
+        <p>最终计算如下字符串的 md5值</p>
+        <pre>
+            <code class="hljs xquery">
+                /v1/trade/coin/<span class="hljs-keyword">order</span>{<span class="hljs-string">"consignType"</span>: <span class="hljs-string">"limit_sell"</span>, <span class="hljs-string">"price"</span>: <span class="hljs-number">59841</span>, <span class="hljs-string">"qty"</span>: <span class="hljs-number">0</span>.<span class="hljs-number">03</span>, <span class="hljs-string">"symbol"</span>: <span class="hljs-string">"BTC_AUC"</span>}abcd1234
+            </code>
+        </pre>
+        <p>计算出来的结果<code>2bb18db0eeca5a5c45c2d87bc09d9500</code>即为签名值</p>
+        <p>请求时把 api key 和签名值放在 http header 里, api secret 只参与签名，不在网络上传输</p>
+        <p>请求如下</p>
+        <pre>
+            <code class="hljs taggerscript">
+                POST /v1/trade/coin/order HTTP/1.1<span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                User-Agent:  xxxx/1.0<span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                Content-Length: 79<span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                Content-Type: application/json<span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                Host: www.auxb.io<span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                X-Api-Token:  abcd5678<span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                X-Api-Sign: 2bb18db0eeca5a5c45c2d87bc09d9500<span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                <span class="hljs-symbol">\r</span><span class="hljs-symbol">\n</span>
+                {"consignType": "limit_sell", "price": 59841, "qty": 0.03, "symbol": "BTC_AUC"}
+            </code>
+        </pre>
+        <p>当接口不需要参数时 request body使用空字符串 “”</p>
+        <div class="anchor-wrap"><h1>交易币种对</h1></div>
+        <div class="anchor-wrap"><h2>AUC市场</h2></div>
+        <pre>
+            <code class="hljs armasm">
+                <span class="hljs-keyword">BTC/AUC
+                </span><span class="hljs-symbol">USDT</span>/AUC
+                <span class="hljs-symbol">ETH</span>/AUC
+                <span class="hljs-symbol">LTC</span>/AUC
+                <span class="hljs-symbol">AE</span>/AUC
+            </code>
+        </pre>
+        <div class="anchor-wrap"><h2>USDT市场</h2></div>
+        <pre>
+            <code class="hljs armasm">
+                <span class="hljs-keyword">BTC/USDT
+                </span><span class="hljs-symbol">ETH</span>/USDT
+                <span class="hljs-symbol">LTC</span>/USDT
+                <span class="hljs-symbol">AE</span>/USDT
+            </code>
+        </pre>
+        <div class="anchor-wrap"><h2>BTC市场</h2></div>
+        <pre>
+            <code class="hljs armasm">
+                <span class="hljs-symbol">ETH</span>/<span class="hljs-keyword">BTC
+                </span><span class="hljs-symbol">LTC</span>/<span class="hljs-keyword">BTC
+                </span><span class="hljs-symbol">AE</span>/<span class="hljs-keyword">BTC
+                </span>
+            </code>
+        </pre>
+        <div class="anchor-wrap"><h1>订单接口</h1></div>
+        <p>以下所有订单接口都需要签名，签名方法见”api签名”部分</p>
+        <div class="anchor-wrap"><h2>获取帐户余额</h2></div>
+        <p>接口: <code>/v1/account/coin</code></p>
+        <p>请求方法: <code>POST</code></p>
+        <p>参数：无</p>
+        <p>返回所有币币帐号的余额, json格式</p>
+        <p><code>status = 10000</code> 表示成功，其它表示失败</p>
+        <p><code>msg</code> 为提示信息</p>
+        <p>返回数据格式:</p>
+        <pre>
+            <code class="hljs xl">{
+                <span class="hljs-string">"status"</span>: <span class="hljs-number">10000</span>, 
+                <span class="hljs-string">"msg"</span>:<span class="hljs-string">"success"</span>,
+                <span class="hljs-string">"data"</span>: [
+                    {
+                    <span class="hljs-string">"coin"</span>: <span class="hljs-string">"BTC"</span>, <span class="hljs-comment">// 币种</span>
+                    <span class="hljs-string">"free"</span>: <span class="hljs-string">"0.000099800000"</span>,  <span class="hljs-comment">// 可用余额</span>
+                    <span class="hljs-string">"freeze"</span>: <span class="hljs-string">"0.000000000000"</span>  <span class="hljs-comment">// 冻结余额</span>
+                    }
+                ]
+            }</code>
+        </pre>
+        <div class="anchor-wrap"><h2>下单</h2></div>
+        <p>接口: <code>/v1/trade/coin/order</code></p>
+        <p>请求方法: <code>POST</code></p>
+        <p>参数:</p>
+        <p><code>consignType</code> 交易类型,  <code>limit_sell</code> 或 <code>limit_buy</code>, <code>limit_sell</code>: 限价卖单， <code>limit_buy</code>: 限价买单</p>
+        <p><code>symbol</code> 交易对,  <code>BTC_USDT,  BTC_AUC,  ETH_AUC, ...</code>, 前面是交易币种， 后面是计价币种，所有支持的币种对见前面”交易币种对”，这里把斜线(/) 换成下划线(_)</p>
+        <p><code>price</code> 单价, 即计价币种的数量</p>
+        <p><code>qty</code> 交易数量，即交易币种的数量</p>
+        <p>参数格式: <code>application/json</code></p>
+        <p>返回<code>status = 10000</code> 表示成功，其它表示失败</p>
+        <p><code>msg</code> 为提示信息</p>
+        <p>以下参数示例表示，以最高 8640.12 USDT 的价格买入 0.15 BTC</p>
+        <pre>
+            <code class="hljs json">
+                {<span class="hljs-attr">"consignType"</span>: <span class="hljs-string">"limit_buy"</span>, <span class="hljs-attr">"price"</span>: <span class="hljs-number">8640.12</span>, <span class="hljs-attr">"qty"</span>: <span class="hljs-number">0.15</span>, <span class="hljs-attr">"symbol"</span>: <span class="hljs-string">"BTC_USDT"</span>}
+            </code>
+        </pre>
+        <div class="anchor-wrap"><h2>当前委托列表</h2></div>
+        <p>接口: <code>/v1/trader/entrust/now</code></p>
+        <p>请求方法: <code>POST</code></p>
+        <p>参数:</p>
+        <p><code>page</code> 页数, 可选, 黙认第一页</p>
+        <p>服务器返回</p>
+        <p><code>status = 10000</code> 表示成功，其它表示失败</p>
+        <p><code>msg</code> 为提示信息</p>
+        <p>返回数据格式</p>
+        <pre>
+            <code class="hljs xl">{
+                <span class="hljs-string">"msg"</span>: <span class="hljs-string">"success"</span>, 
+                <span class="hljs-string">"status"</span>: <span class="hljs-number">10000</span>,
+                <span class="hljs-string">"data"</span>: [{
+                    <span class="hljs-string">"qty"</span>: <span class="hljs-number">0.03</span>, <span class="hljs-comment">// 委托数量</span>
+                    <span class="hljs-string">"consign_dt"</span>: <span class="hljs-string">"1559171511"</span>, <span class="hljs-comment">// 委托时间</span>
+                    <span class="hljs-string">"bargain"</span>: <span class="hljs-number">0</span>, <span class="hljs-comment">// 已成交数量</span>
+                    <span class="hljs-string">"unbargain"</span>: <span class="hljs-number">0.03</span>, <span class="hljs-comment">// 未成交数量</span>
+                    <span class="hljs-string">"consign_id"</span>: <span class="hljs-string">"353988449792966656"</span>, <span class="hljs-comment">// 订单号</span>
+                    <span class="hljs-string">"direction"</span>: <span class="hljs-number">0</span>, <span class="hljs-comment">// 方向 0 买, 1卖</span>
+                    <span class="hljs-string">"symbol"</span>: <span class="hljs-string">"BTC/AUC"</span>, <span class="hljs-comment">// 币对</span>
+                    <span class="hljs-string">"trader_type"</span>: <span class="hljs-number">4</span>,  <span class="hljs-comment">// 类型， 4 限价交易</span>
+                    <span class="hljs-string">"total_amount"</span>: <span class="hljs-number">1791.03</span>,  <span class="hljs-comment">// 总数量</span>
+                    <span class="hljs-string">"price"</span>: <span class="hljs-number">59701.0</span>  <span class="hljs-comment">// 单价</span>
+                }]
+            }</code>
+        </pre>
+        <div class="anchor-wrap"><h2>撤单</h2></div>
+        <p>接口: <code>/v1/trade/coin/order</code></p>
+        <p>请求方法: <code>POST</code></p>
+        <p>参数</p>
+        <p><code>consignType</code> 固定为 <code>cancel</code></p>
+        <p><code>consignId</code> 订单号</p>
+        <p>服务器返回 <code>status=10000</code>表示成功</p>
+        <p>示例</p>
+        <pre>
+            <code class="hljs json">
+                {<span class="hljs-attr">"consignType"</span>:<span class="hljs-string">"cancel"</span>,<span class="hljs-attr">"consignId"</span>:<span class="hljs-string">"353988449792966656"</span>}
+            </code>
+        </pre>
+        <div class="anchor-wrap"><h1>行情接口</h1></div>
+        <p>行情使用websocket订阅, 服务器可以实时推送最新行情</p>
+        <p>Websocket 地址 <code>wss://ws.auxb.io/</code></p>
+        <p>行情接口不需要签名</p>
+        <div class="anchor-wrap"><h2>订阅信息</h2></div>
+        <div class="anchor-wrap"><h3>订阅市场深度详情</h3></div>
+        <p>发送</p>
+        <pre>
+            <code class="hljs json">
+                {<span class="hljs-attr">"topic"</span>:<span class="hljs-string">"position"</span>,<span class="hljs-attr">"symbol"</span>:<span class="hljs-string">"BTC/USDT"</span>,<span class="hljs-attr">"depth"</span>:<span class="hljs-number">20</span>,<span class="hljs-attr">"unsubscribe"</span>:[]}
+            </code>
+        </pre>
+        <p>参数</p>
+        <p><code>topic</code>: <code>position</code></p>
+        <p><code>symbol</code>: 要订阅的币对</p>
+        <p><code>depth</code>: 要返回的挂单数量</p>
+        <p>服务器定时推送 depth数量的买单，卖单</p>
+        <p>推送格式见后面”市场深度”</p>
+        <div class="anchor-wrap"><h3>订阅所有币对的实时成交tick</h3></div>
+        <p>发送</p>
+        <pre>
+            <code class="hljs json"> 
+                {<span class="hljs-attr">"topic"</span>:<span class="hljs-string">"snapshot"</span>,<span class="hljs-attr">"subscribe"</span>:[<span class="hljs-string">"AUC"</span>,<span class="hljs-string">"USDT"</span>,<span class="hljs-string">"BTC"</span>]}
+            </code>
+        </pre>
+        <p>参数</p>
+        <p><code>topic</code>: <code>snapshot</code></p>
+        <p><code>subscribe</code>: 要订阅的市场， 目前有 <code>AUC</code>, <code>USDT</code>, <code>BTC</code></p>
+        <p>服务器返回所有币对的最新信息，并推送实时成交tick</p>
+        <p>推送的数据格式见后面”最新信息”和”实时成交tick”</p>
+        <div class="anchor-wrap"><h3>获取历史交易信息</h3></div>
+        <p>发送</p>
+        <pre>
+            <code class="hljs json"> 
+                {<span class="hljs-attr">"topic"</span>:<span class="hljs-string">"histick"</span>,<span class="hljs-attr">"symbol"</span>:<span class="hljs-string">"BTC/USDT"</span>}
+            </code>
+        </pre>
+        <p>参数</p>
+        <p><code>topic</code>: <code>histick</code></p>
+        <p><code>symbol</code>: 要订阅的币对</p>
+        <p>服务器推送指定币对symbol的历史交易信息，并推送实时成交tick</p>
+        <p>推送的数据格式见后面”历史交易信息”和”实时成交tick”</p>
+        <div class="anchor-wrap"><h2>服务器推送信息</h2></div>
+        <div class="anchor-wrap"><h3>市场币对的最新信息</h3></div>
+        <pre>
+            <code class="hljs json">
+                {<span class="hljs-attr">"Topic"</span>:<span class="hljs-string">"snapshot"</span>,<span class="hljs-attr">"Now"</span>:<span class="hljs-number">1559209047</span>,<span class="hljs-attr">"Data"</span>:{<span class="hljs-attr">"AE/AUC"</span>:<span class="hljs-string">"20190530|3.915|4.1536|3.892|4.0253|20811.8064"</span>,
+                <span class="hljs-attr">"BTC/USDT"</span>: ....}
+                }
+            </code>
+        </pre>
+        <p><code>Topic</code>: <code>snapshot</code> 当前所有市场的最新信息</p>
+        <p>data数据格式</p>
+        <p><code>20190530|3.915|4.1536|3.892|4.0253|20811.8064</code></p>
+        <p><code>时间|open|close|low|high|volume</code></p>
+        <div class="anchor-wrap"><h3>市场深度</a></h3></div>
+        <pre>
+            <code class="hljs json">{
+                <span class="hljs-attr">"Topic"</span>:<span class="hljs-string">"orderbook"</span>,
+                <span class="hljs-attr">"asks"</span>:[
+                    [<span class="hljs-number">8689.65</span>,<span class="hljs-number">0.0304</span>],
+                    [<span class="hljs-number">8689.69</span>,<span class="hljs-number">0.0121</span>]
+                    ],
+                <span class="hljs-attr">"bids"</span>:[
+                    [<span class="hljs-number">8689.25</span>,<span class="hljs-number">0.0399</span>],
+                    [<span class="hljs-number">8688.94</span>,<span class="hljs-number">0.0135</span>],
+                    [<span class="hljs-number">8688.51</span>,<span class="hljs-number">0.0298</span>]
+                    ],
+                <span class="hljs-attr">"symbol"</span>:<span class="hljs-string">"BTC/USDT"</span>
+                }
+            </code>
+        </pre>
+        <p><code>Topic</code>: <code>orderbook</code> 市场深度</p>
+        <p>“<code>asks</code>”: <code>[[8689.65,0.0304]]</code> 卖出单，单价，数量</p>
+        <p>“<code>bids</code>”:<code>[[8689.25,0.0399]</code>, 买入单，单价，数量</p>
+        <div class="anchor-wrap"><h3>实时成交tick</h3></div>
+        <pre>
+            <code class="hljs json">
+                {<span class="hljs-attr">"Topic"</span>:<span class="hljs-string">"tick"</span>,
+                <span class="hljs-attr">"Data"</span>:<span class="hljs-string">"ETH/USDT|0|1559209051|282.2|0.07"</span>}
+            </code>
+        </pre>
+        <p><code>Topic</code>: <code>tick</code> 实时成交</p>
+        <p>data 数据格式</p>
+        <p><code>ETH/USDT|0|1559209051|282.2|0.07</code></p>
+        <p><code>币对|方向|时间|单价|数量</code></p>
+        <p>方向 0 买入，1 卖出</p>
+        <div class="anchor-wrap"><h3>历史交易信息</h3></div>
+        <pre>
+            <code class="hljs json">
+                {<span class="hljs-attr">"Topic"</span>:<span class="hljs-string">"histick"</span>,<span class="hljs-attr">"Symbol"</span>:<span class="hljs-string">"BTC/USDT"</span>,<span class="hljs-attr">"Data"</span>:[<span class="hljs-string">"BTC/USDT|1|1559643995|7974.83|0.0215"</span>]}
+            </code>
+        </pre>
+        <p><code>Topic</code>: <code>histick</code> 历史成交信息</p>
+        <p><code>Symbol</code>: 币种对</p>
+        <p><code>Data</code>: 数据</p>
+        <p>data 数据格式</p>
+        <p><code>BTC/USDT|1|1559643995|7974.83|0.0215</code></p>
+        <p><code>币对|方向|时间|价格|数量</code></p>
+        <p>方向 0 买入，1 卖出</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7; IE=EmulateIE9">
+    <!-- Page title -->
+    <title>开关</title>
+    <style type="text/css">
+        * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .on_off {
+        background-color: #fff!important;
+        background: url(img/stop.svg)no-repeat center;
+        background-size: 10px 10px;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        -moz-transition: all 0.5s;
+        -o-transition: all 0.5s;
+        height: 24px;
+        width: 35px;
+        border-radius: 5px;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        top: 3px;
+        position: absolute;
+    }
+    
+    .on_off_open {
+       right: 5px;
+    }
+    
+    .on_off_close {
+        right: 40px;
+    }
+    
+    .normal_li {
+        height: 30px;
+        width: 40px;
+        float: left;
+        border-radius: 5px;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        background: skyblue;
+        color: #fff;
+    }
+    
+    ul {
+        height: 30px;
+        width: 80px;
+        border-radius: 5px;
+        background: skyblue;
+        margin-top: 20px;
+        margin-left: 20px;
+        list-style: none;
+        float: left;
+        cursor: pointer;
+        position: relative;
+        font-size: 14px;
+    }
+    </style>
+</head>
+
+<body>
+    <ul>
+        <li class="normal_li">开</li>
+        <li class="normal_li">关</li>
+        <li class="on_off on_off_ios"></li>
+    </ul>
+</body>
+<script type="text/javascript">
+    window.onload = function() {
+            var ul = document.getElementsByTagName('ul')[0];
+            var on_off = document.getElementsByClassName('on_off')[0];
+            ul.onclick = function() {
+                var bool = on_off.getAttribute('class').indexOf('on_off_open');
+                if(bool!=-1) {
+                    on_off.setAttribute('class',"on_off on_off_close");
+                }else{
+                    on_off.setAttribute('class',"on_off on_off_open");
+                }
+            }
+        }
+</script>
+</html>

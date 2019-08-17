@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>鼠标悬停图片360度旋转效果</title>
+<style>
+.xwcms {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    background: no-repeat url(1.jpg) left top;
+    -webkit-background-size: 220px 220px;
+    -moz-background-size: 220px 220px;
+    background-size: 220px 220px;
+    -webkit-border-radius: 110px;
+    border-radius: 110px;
+    -webkit-transition: -webkit-transform 2s ease-out;
+    -moz-transition: -moz-transform 2s ease-out;
+    -o-transition: -o-transform 2s ease-out;
+    -ms-transition: -ms-transform 2s ease-out;
+}
+.xwcms:hover {
+    -webkit-transform: rotateZ(360deg);
+    -moz-transform: rotateZ(360deg);
+    -o-transform: rotateZ(360deg);
+    -ms-transform: rotateZ(360deg);
+    transform: rotateZ(360deg);
+}
+
+.rote{
+    width: 200px;
+    height: 200px;
+    background: rgb(185, 24, 24);
+    transform-origin: bottom right;/* 设置旋转点，默认是中心点 */
+    transition: all 1s;
+}
+
+</style>
+</head>
+<body>
+    <div class="xwcms">
+    </div>
+    <div class="rote">
+    </div>
+    <a href="1.jpg">图片</a>    
+</body>
+<script type="text/javascript">
+    let rote = document.querySelector('.rote')
+    let i = 0;
+    rote.onclick = function(){
+         i++
+         rote.style.transform = 'rotate('+eval(180+90*i)+'deg)'
+
+    }
+</script>
+</html>
